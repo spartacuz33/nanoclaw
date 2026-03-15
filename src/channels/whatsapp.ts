@@ -185,6 +185,7 @@ export class WhatsAppChannel implements Channel {
 
           // Translate LID JID to phone JID if applicable
           const chatJid = await this.translateJid(rawJid);
+          logger.debug({ rawJid, chatJid, fromMe: msg.key.fromMe }, 'Message received');
 
           const timestamp = new Date(
             Number(msg.messageTimestamp) * 1000,
@@ -202,6 +203,8 @@ export class WhatsAppChannel implements Channel {
 
           // Only deliver full message for registered groups
           const groups = this.opts.registeredGroups();
+          const registeredJids = Object.keys(groups);
+          logger.debug({ chatJid, registeredJids, isRegistered: !!groups[chatJid] }, 'Checking registration');
           if (groups[chatJid]) {
             const content =
               normalized.conversation ||
